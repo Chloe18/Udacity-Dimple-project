@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Baseball data visualization</title>
+	<script src="http://d3js.org/d3.v3.min.js"></script>
+	<script src="http://dimplejs.org/dist/dimple.v2.0.0.min.js"></script>
+	<style type="text/css">
+		h2{
+			text-align: center;
+		}
+
+		p{
+			position: absolute;
+			top: 100px;
+			left: 200px;
+		}
+		button.storybutton1{
+			position: fixed;
+			top: 5px;
+			left: 50px;
+		}
+		button.storybutton2{
+			position: fixed;
+			top: 75px;
+			left: 50px;
+		}
+		button.storybutton3{
+			position: fixed;
+			top: 145px;
+			left: 50px;
+		}
+	</style>
+	<script type="text/javascript">
+		function draw(data){
+
+			"use strict"
+
+			//Set the background
+			var margin = 200,
+			h = 600 - margin,
+			width = 1260 - margin/3;
+
+			d3.select('body')
+			.append('h2')
+			.text('Baseball Player: Weight/Height vs. Home Runs');
+
+			d3.select('body')
+			.append('button')
+			.attr('id','L')
+			.text("Left Handedness");
+
+			d3.select('body')
+			.append('p')
+			.text("数据集中大部分选手是右撇子选手，这些选手也更易于获得更高的全垒得分。随着身高体重的增加，右撇子获得高全垒得分的选手增多，但在体重超过222后，没有选手获得高全垒得分。但这一趋势在左撇子选手中并不明显，高全垒得分选手较均匀的分布在不同的身高体重范围内。")
+
+			d3.select('body')
+			.append('button')
+			.attr('id','R')
+			.text("Right Handedness");
+
+			d3.select('body')
+			.append('button')
+			.attr('id','B')
+			.text("Both Handedness");
+
+			var svg = d3.select('body')
+						.append('svg')
+						.attr('width',width + margin)
+						.attr('height',h + margin)
+						.append('g')
+						.attr('class','chart');
+
+			//Add xAxis and yAxis, the scale of the scatter and other related features of the picture
+			var mychart = new dimple.chart(svg,data);
+
+			var x = mychart.addCategoryAxis("x","weight");
+			var y = mychart.addCategoryAxis("y","height");
+			var z = mychart.addMeasureAxis("z","HR");
+
+			//Add name so that the HR will not be aggregated
+			mychart.addSeries(["name","handedness"],dimple.plot.scatter);
+
+			var myLegend = mychart.addLegend(30,70,60,30,"Left");
+
+			mychart.draw();
+
+
+			//Add Button
+			d3.select('#L').on('click',function(d){
+				
+				mychart.data = dimple.filterData(data,"handedness","L");
+				mychart.addSeries(["name","handedness"],dimple.plot.scatter);
+
+				mychart.draw();
+				
+			});
+
+			d3.select('#R').on('click',function(d){
+
+				mychart.data = dimple.filterData(data,"handedness","R");
+				mychart.addSeries(["name","handedness"],dimple.plot.scatter);
+
+				mychart.draw();
+				
+			});
+
+			d3.select('#B').on('click',function(d){
+				
+				mychart.data = dimple.filterData(data,"handedness","B");
+				mychart.addSeries(["name","handedness"],dimple.plot.scatter);
+
+				mychart.draw();
+				
+			});
+
+
+		}
+	</script>
+
+</head>
+<body>
+	<script type="text/javascript">
+		d3.csv("baseball_data.csv",draw);
+	</script>
+</body>
+<html>
